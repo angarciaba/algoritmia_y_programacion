@@ -7,7 +7,6 @@
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
 =end
 
-require 'Qt4'
 
 class Ui_MainWindow
     attr_reader :centralWidget
@@ -69,18 +68,36 @@ module Ui
     end
 end  # module Ui
 
-if $0 == __FILE__
-    a = Qt::Application.new(ARGV)
-    u = Ui_MainWindow.new
-    w = Qt::MainWindow.new
-    u.setupUi(w)
-    w.show
-    a.exec
+##################################################
+######### LO NUEVO A INSERTAR ####################
+##################################################
+
+require 'Qt4'
+
+class MainForm < Qt::MainWindow
+  slots 'lanzarMoneda()'
+  def lanzarMoneda()
+    if rand(2) == 0
+      @ui.label.text = "CARA"
+    else
+      @ui.label.setText("SELLO")
+    end
+  end
+ 
+  def initialize
+    super
+    @ui = Ui::MainWindow.new
+    @ui.setup_ui(self)
+    self.show
+  end
 end
 
 
-
-
+if $0 == __FILE__
+    a = Qt::Application.new(ARGV)
+    MainForm.new
+    a.exec
+end
 
 
 

@@ -1,3 +1,20 @@
+def dd(expresion,entorno,mensaje="")
+  puts "#{expresion}=#{entorno.eval(expresion)}  #{mensaje}\n==="
+end
+
+a= "hola"
+b=[1,3,5]
+c={}
+c[0]="a"
+c[1]="b"
+dd("a",binding)
+dd("b",binding)
+dd("c",binding)
+e=5
+f=7
+dd("e+f",binding)
+
+exit
     metodos = 
     [
       ["ui",    ".ui", /^\s*<widget class=[^\s]+\s+name=["|'](\w+)["|']>/, /^\s*<slot>(.+?)<\/slot>/],

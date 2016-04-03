@@ -1,7 +1,7 @@
 =begin
 ** Form generated from reading ui file 'mainwindow.ui'
 **
-** Created: mar mar 29 08:13:27 2016
+** Created: sáb abr 2 18:25:30 2016
 **      by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -9,7 +9,7 @@
 
 require 'Qt4'
 
-class Ui_MainWindow < Qt::Dialog
+class Ui_MainWindow
     attr_reader :centralWidget
     attr_reader :pushButton
     attr_reader :label
@@ -69,11 +69,38 @@ module Ui
     end
 end  # module Ui
 
+##################################################
+######### LO NUEVO A INSERTAR ####################
+##################################################
+
+class MainForm < Qt::MainWindow
+  slots 'lanzarMoneda()'
+  def lanzarMoneda()
+    if rand(2) == 0
+      @label.text = "CARA"
+    else
+      @label.text = "SELLO"
+    end
+  end
+ 
+  def initialize
+    super
+    @ui = Ui::MainWindow.new
+    @ui.setup_ui(self)
+    self.show
+  end
+end
+
+
 if $0 == __FILE__
     a = Qt::Application.new(ARGV)
-    u = Ui_MainWindow.new
-    w = Qt::MainWindow.new
-    u.setupUi(w)
-    w.show
+    MainForm.new
     a.exec
 end
+
+
+
+
+
+
+

@@ -17,6 +17,7 @@ gem install qtbindings
 "
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONES
+# 0.2 Se elimina lo superfluo, concretamente el análisis de los archivos .ui, dado que esa es una tarea que realiza el rbuic4. Aquí sólo hay que trabajar con el resultado que arroje el rbuic4, es decir, los archivos _ui.rb. Todo lo demás es inútil y se eliminó.
 # 0.1 La primera. 
 #-----------------------------------------------------------------------------------------------------------------------
 # Para ayudar a depurar:
