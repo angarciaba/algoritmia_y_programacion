@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>556</width>
-    <height>344</height>
+    <width>228</width>
+    <height>115</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,25 +60,5 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>released()</signal>
-   <receiver>DatosPersonales</receiver>
-   <slot>ok_datos()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>321</x>
-     <y>318</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>364</x>
-     <y>268</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
- <slots>
-  <slot>ok_datos()</slot>
- </slots>
+ <connections/>
 </ui>

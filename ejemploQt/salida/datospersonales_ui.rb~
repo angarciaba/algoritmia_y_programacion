@@ -7,7 +7,6 @@
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
 =end
 
-require 'Qt4'
 
 class Ui_DatosPersonales
     attr_reader :verticalLayout
@@ -95,11 +94,3 @@ module Ui
     end
 end  # module Ui
 
-if $0 == __FILE__
-    a = Qt::Application.new(ARGV)
-    u = Ui_DatosPersonales.new
-    w = Qt::Dialog.new
-    u.setupUi(w)
-    w.show
-    a.exec
-end

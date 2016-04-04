@@ -1,3 +1,8 @@
+
+STDOUT << "Hola" << "\n"
+STDOUT << "Hola"
+
+exit
 def dd(expresion,entorno,mensaje="")
   puts "#{expresion}=#{entorno.eval(expresion)}  #{mensaje}\n==="
 end
