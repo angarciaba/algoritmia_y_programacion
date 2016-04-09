@@ -1,4 +1,10 @@
-
+a= gets.chomp.to_s
+p a
+a= gets.chomp.to_i
+p a
+a= gets.chomp.to_f
+p a
+exit
 STDOUT << "Hola" << "\n"
 STDOUT << "Hola"
 
