@@ -6,11 +6,13 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institución: EISC, Universidad del Valle, Colombia" +
 "Fecha creación: 2016-03-29\n" +
-"Fecha última modificación: 2016-04-08\n" +
+"Fecha última modificación: 2016-04-14\n" +
 "Licencia: GNU-GPL"
-Version = "0.3"
+Version = "0.4"
 Descripcion = 
-"Toma uno o más archivos gui.ui con la descripción de una interfase de Qt4 generada con qtcreator, y uno o más archivos funciones.rb con las funciones escritas en modo procedural (ingenuo, no-OO) y los integra en una aplicacion.ui. El nombre de cada archivo con funciones debe de coincidir con el nombre de cada archivo que contenga la respectiva interfase gui y con el nombre de la clase interna (con la salvedad de que el nombre de los archivos debe ir todo en minúsculas). Uno y sólo uno de los archivos debe llamarse mainwindow.ui y debe contener la ventana principal, de tipo Qt::MainWindow. Los demás archivos deben ser de tipo Qt::Dialog. En los archivos .rb se permite escribir qtCreate(dd) y qtDestroy() siendo qtCreate una palabra clave nueva que permite crear un nuevo Dialog, y siendo dd el nombre de la clase que hereda de Qt::Dialog. Con qtDestroy() se incluye código para destruir la ventana actual. Por cierto que cada archivo .ui debe contener un único widget y el nombre del widget debe de coincidir con el nombre del archivo. Con qtcreator hay que crear cada widget (que hereda de Qt::MainWindow o Qt:Dialog), incluyendo el nombre de las funciones externas (slots) que llamará y que deben encontrarse en el respectivo archivo.rb. La aplicación generada se guarda en un directorio aparte con el ejecutable, para que no interfiera con los .rb que contienen las funciones."
+"Toma uno o más archivos gui.ui con la descripción de una interfase de Qt4 generada con qtcreator, y uno o más archivos funciones.rb con las funciones escritas en modo procedural (ingenuo, no-OO) y los integra en una aplicacion.ui. El nombre de cada archivo con funciones debe de coincidir con el nombre de cada archivo que contenga la respectiva interfase gui y con el nombre de la clase interna (con la salvedad de que el nombre de los archivos debe ir todo en minúsculas). Uno y sólo uno de los archivos debe llamarse mainwindow.ui y debe contener la ventana principal, de tipo Qt::MainWindow. Los demás archivos deben ser de tipo Qt::Dialog. En los archivos .rb se permite escribir qtCreate(dd) y qtDestroy() siendo qtCreate una palabra clave nueva que permite crear un nuevo Dialog, y siendo dd el nombre de la clase que hereda de Qt::Dialog. Con qtDestroy() se incluye código para destruir la ventana actual. Por cierto que cada archivo .ui debe contener un único widget y el nombre del widget debe de coincidir con el nombre del archivo. Con qtcreator hay que crear cada widget (que hereda de Qt::MainWindow o Qt:Dialog), incluyendo el nombre de las funciones externas (slots) que llamará y que deben encontrarse en el respectivo archivo.rb. La aplicación generada se guarda en un directorio aparte con el ejecutable, para que no interfiera con los .rb que contienen las funciones.
+
+La función qtDestroy puede especificar variables a retornar, separadas por comas. Se recibirán en la variable qtI_resultados, que es un array conteniendo las variables retornadas en el mismo orden especificado. O sea, qtDestroy(a, b, c) produce en el programa llamante qtI_resultados = [a, b, c]"
 Dependencias =
 "
 sudo apt-get install ruby-qt4 qtcreator cmake
@@ -18,6 +20,7 @@ gem install qtbindings
 "
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONES
+# 0.4 Puse system en vez de exec. Si no hay argumentos supone que hay que usar todos los archivos del directorio actual. Mejoré los mensajes de salida.
 # 0.3 Ya comprendí como generar el archivo de salida. Falta qtCreate(dd), qtDestroy() y verificar que todos los slots tengan su función.
 # 0.2 Se elimina lo superfluo, concretamente el análisis de los archivos .ui, dado que esa es una tarea que realiza el rbuic4. Aquí sólo hay que trabajar con el resultado que arroje el rbuic4, es decir, los archivos _ui.rb. Todo lo demás es inútil y se eliminó.
 # 0.1 La primera. 
@@ -63,8 +66,8 @@ class IntegracionQt
   def generarEjecutable
     Dir.mkdir @directorioSalida unless File.directory? @directorioSalida
     archivosEntrada = separarArchivos
-#    archivosEntrada[".ui"].each { |archivo| exec "#{@comandoRubyQt} #{archivo}.ui -o #{@directorioSalida}/#{File.basename(archivo)}_ui.rb" }
-    unless archivosEntrada[".ui"].inject(false) { |encontrado, archivo| (encontrado or File.basename(archivo) == "mainwindow") }
+    archivosEntrada[".ui"].each { |archivo| system "#{@comandoRubyQt} #{archivo}.ui -o #{@directorioSalida}/#{File.basename(archivo)}_ui.rb" }
+    unless archivosEntrada[".ui"].inject(false) { |encontrado, archivo| ((encontrado or File.basename(archivo)) == "mainwindow") }
       $error.abortar "Falta el archivo mainwindow.ui, que contiene la ventana principal" 
     end
     
@@ -75,10 +78,10 @@ class IntegracionQt
     
     # Reporte de lo encontrado
     @atributosYSlots.each do |archivo, atributos_slots|
-      puts "====================\nEl archivo #{archivo}_ui.rb contiene la clase #{atributos_slots[2]} con los siguientes objetos gráficos:"
+      puts "====================\nDebes escribir un archivo #{archivo}.rb que contenga las siguientes funciones (slots):"
+      atributos_slots[1].each { |slot| puts "    def #{slot}\n      # ToDo\n    end\n\n" }
+      puts "\n====================\nY dentro de esas funciones puedes usar los siguientes objetos gráficos:"
       atributos_slots[0].each { |atributo| puts "    #{atributo}" }
-      puts "====================\nEl archivo #{archivo}_ui.rb contiene la clase #{atributos_slots[2]} con las siguientes funciones (slots):"
-      atributos_slots[1].each { |slot| puts "    #{slot}" }
     end
     
     # Crea el archivo de salida
@@ -98,17 +101,32 @@ class #{File.basename(archivo) == "mainwindow" ? "MainForm" : "QtI_"+atributos_s
           if atributos_slots[1].length > 0
             flujoSalida << "  slots '#{atributos_slots[1][0]}'"
             atributos_slots[1].drop(1).each { |slot| flujoSalida << ", '#{slot}'" }
-            flujoSalida << "\n"
+            flujoSalida << "\n  attr_accessor :qtI_resultados\n"
           end
+          # Se añaden los archivos.rb con las definiciones de funciones que son slots en el GUI.
           if File.file? archivo+".rb"
             open(archivo+".rb").each do |linea|
-              linea = buscarYTransformarAtributos(linea, atributos_slots[0])
-              flujoSalida << linea
+              case linea
+              when /qtCreate\((.*)\)/
+                flujoSalida << <<-CODIGO_LLAMADA_QTCREATE
+    dialog_#{$1} = QtI_#{$1}.new(self)
+    if(dialog_#{$1}.exec == 1) # OK clicked
+    #  ToDo ????
+    end
+    qtI_resultados = dialog_#{$1}.qtI_resultados
+                CODIGO_LLAMADA_QTCREATE
+              when /qtDestroy\((.*)\)/
+                variables = buscarYTransformarAtributos($1, atributos_slots[0])
+                flujoSalida << "    @qtI_resultados = [ #{variables} ]\n"
+                flujoSalida << "    close()\n"
+              else
+                flujoSalida << buscarYTransformarAtributos(linea, atributos_slots[0])
+              end
             end
           end
           flujoSalida << <<-CODIGO_FIJO_FIN_CLASE
-  def initialize
-    super
+  def initialize(parent=nil)
+    super(parent)
     @ui = Ui::#{atributos_slots[2]}.new
     @ui.setup_ui(self)
     self.show
@@ -250,8 +268,11 @@ if $0 == __FILE__
 #  binding.pry
   $error = Error.instance
   argumentos = Argumentos.new(ARGV)
+  archivos = []
+  archivos = Dir["*.rb"] + Dir["*.ui"] if ARGV.empty?
+  archivos -= ["integracionQt.rb"]
   $error.verbose = argumentos[:verbose]
-  integracionQt = IntegracionQt.new(ARGV, DirectorioEjecutable, argumentos[:salida], "rbuic4")
+  integracionQt = IntegracionQt.new(archivos, DirectorioEjecutable, argumentos[:salida], "rbuic4")
   integracionQt.generarEjecutable
 end
 

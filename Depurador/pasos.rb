@@ -8,13 +8,14 @@ Copyright =
 "Fecha creación: 2016-04-08\n" +
 "Fecha última modificación: 2016-04-08\n" +
 "Licencia: GNU-GPL"
-Version = "0.1"
+Version = "0.2"
 Descripcion = 
 "Sirve para ejecutar paso a paso un programa viendo después de cada paso todas las variables locales y de instancia, así como la siguiente línea de código que se va a ejecutar. Cada vez que se pulse <ENTER> se ejecuta una línea de código."
 Dependencias = 
 "Ninguna."
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONES
+# 0.2 Corregido el problema con gets, debido a la redirección de ARGV
 # 0.1 La primera. 
 #-----------------------------------------------------------------------------------------------------------------------
 begin
@@ -45,7 +46,7 @@ end
 if $0 == __FILE__
   argumentos = Argumentos.new(ARGV)
   archivoFuente = ARGV[0]
-  archivoFuente = "prueba.rb"
+  ARGV.replace []
   arrayLineas = open(archivoFuente).readlines
   tp__tp = TracePoint.new(:line, :call, :return) do |tp__tp|
     next if tp__tp.path != archivoFuente

@@ -209,8 +209,16 @@ end  # module Ui
 require 'Qt4'
 class QtI_DatosPersonales < Qt::Dialog
   slots 'ok_datos()'
-  def initialize
-    super
+  attr_accessor :qtI_resultados
+
+  def ok_datos()
+    @qtI_resultados = [ @ui.lineEdit.text, @ui.spinBox.value ]
+    close()
+  end
+
+
+  def initialize(parent=nil)
+    super(parent)
     @ui = Ui::DatosPersonales.new
     @ui.setup_ui(self)
     self.show
@@ -221,6 +229,7 @@ end
 require 'Qt4'
 class MainForm < Qt::MainWindow
   slots 'lanzarMoneda()', 'terminar()'
+  attr_accessor :qtI_resultados
 
   def lanzarMoneda()
     if rand(2) == 0
@@ -230,8 +239,16 @@ class MainForm < Qt::MainWindow
     end
   end
 
-  def initialize
-    super
+  def terminar
+    dialog_DatosPersonales = QtI_DatosPersonales.new(self)
+    if(dialog_DatosPersonales.exec == 1) # OK clicked
+    #  ToDo ????
+    end
+    qtI_resultados = dialog_DatosPersonales.qtI_resultados
+  end
+  
+  def initialize(parent=nil)
+    super(parent)
     @ui = Ui::MainWindow.new
     @ui.setup_ui(self)
     self.show

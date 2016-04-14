@@ -12,11 +12,11 @@ The subset of Ruby keywords will be: def, end, while, for, in, if, elsif, else, 
 
 IO will be made by p, print, puts and gets.chomp.to_i, gets.chomp.to_f and gets.chomp.to_s (for pursuing uniformity).
 
-A tool named pasos.rb is going to be developed here to execute step by step the student ruby program, and showing local variables, for enhacing student comprehension of the algoritms involved.
+A tool named pasos.rb is going to be developed here to execute step by step the student ruby program, and showing local variables, for enhancing student comprehension of the algoritms involved.
 
-And there is an additional topic: graphical user interfaces. This is a very demanding problem for this kind of course because all reasonable GUI frameworks nowadays are objet oriented. To solve this problem, another tool (named integracionQt.rb) is being developed here to allow novice programmers to use a procedural only interface. This tool will translate this student interface to the very known OO-GUI, Qt4.
+And there is an additional topic: graphical user interfaces. This is a very demanding problem for this kind of course because all reasonable GUI frameworks nowadays are object oriented. To solve this problem, another tool (named integracionQt.rb) is being developed here to allow novice programmers to use a procedural only interface. This tool will translate this student interface to the very known OO-GUI, Qt4.
 
-Finally, a clarification note: hey guys, I like OO programming as much as the best. And I love Ruby and the Ruby way. But over many decades of teaching programming, we discover that OO paradigm is not as simple as it must be for the novice. It adds an additional abstraction layer that can be excessive for a first programming course. In this kind of course we need to emphasize conditionals, loops, argument passing to functions, strings and arrays. No more and no less. Furthermore, the language employed can not be an obstacle because an inordinate amount of syntaxis. And Ruby fits these needs very well. Much better than Python (I know many great universities prefer Python but I suppose they have not thought througthly).
+Finally, a clarification note: hey guys, I like OO programming as much as the best. And I love Ruby and the Ruby way. But over many decades of teaching programming, we discover that OO paradigm is not as simple as it must be for the novice. It adds an additional abstraction layer that can be excessive for a first programming course. In this kind of course we need to emphasize conditionals, loops, argument passing to functions, strings and arrays. No more and no less. Furthermore, the language employed can not be an obstacle because an inordinate amount of syntaxis. And Ruby fits these needs very well. Much better than Python (I know many great universities prefer Python but I suppose they have not thought it througthly).
 
 Ángel
 

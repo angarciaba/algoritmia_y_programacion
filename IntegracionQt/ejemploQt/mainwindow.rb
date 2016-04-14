@@ -7,3 +7,7 @@
     end
   end
 
+  def terminar
+   qtCreate(DatosPersonales)
+  end
+  
