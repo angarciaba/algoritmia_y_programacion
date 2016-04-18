@@ -6,15 +6,16 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institución: EISC, Universidad del Valle, Colombia" +
 "Fecha creación: 2016-04-08\n" +
-"Fecha última modificación: 2016-04-08\n" +
+"Fecha última modificación: 2016-04-18\n" +
 "Licencia: GNU-GPL"
-Version = "0.2"
+Version = "0.3"
 Descripcion = 
 "Sirve para ejecutar paso a paso un programa viendo después de cada paso todas las variables locales y de instancia, así como la siguiente línea de código que se va a ejecutar. Cada vez que se pulse <ENTER> se ejecuta una línea de código."
 Dependencias = 
 "Ninguna."
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONES
+# 0.3 Elimina el echo en gets, para evitar que el usuario se confunda cuando su programa tiene también gets.
 # 0.2 Corregido el problema con gets, debido a la redirección de ARGV
 # 0.1 La primera. 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -44,6 +45,7 @@ end
 
 #-----------------------------------------------------------------------------------------------------------------------
 if $0 == __FILE__
+  require 'io/console'
   argumentos = Argumentos.new(ARGV)
   archivoFuente = ARGV[0]
   ARGV.replace []
@@ -57,10 +59,11 @@ if $0 == __FILE__
       puts "\t\t#{var}=#{value}"
     end
     puts "\t#{lineaActual}: #{arrayLineas[lineaActual-1].chomp}"
-    $stdin.gets
+    $stdin.noecho(&:gets)
   end
   tp__tp.enable
   load(archivoFuente)
   tp__tp.disable
 end
+
 
