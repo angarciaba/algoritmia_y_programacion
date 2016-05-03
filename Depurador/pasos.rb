@@ -2,43 +2,45 @@
 # encoding: utf-8
 # Programa: pasos.rb
 Copyright = 
-"Autor: Angel Garcia Baños\n" +
+"Author: Angel Garcia Baños\n" +
 "Email: angel.garcia@correounivalle.edu.co\n" +
-"Institución: EISC, Universidad del Valle, Colombia" +
-"Fecha creación: 2016-04-08\n" +
-"Fecha última modificación: 2016-04-18\n" +
-"Licencia: GNU-GPL"
-Version = "0.3"
-Descripcion = 
-"Sirve para ejecutar paso a paso un programa viendo después de cada paso todas las variables locales y de instancia, así como la siguiente línea de código que se va a ejecutar. Cada vez que se pulse <ENTER> se ejecuta una línea de código."
-Dependencias = 
-"Ninguna."
+"Institution: EISC, Universidad del Valle, Colombia" +
+"Creation date: 2016-04-08\n" +
+"Last modification date: 2016-05-03\n" +
+"License: GNU-GPL"
+Version = "0.6"
+Description = "It is useful for executing a Ruby program step by step, showing all local variables and instance variables and the code line that is going to be executed if you press <ENTER>. It is very simple, compared with other debbugers, but that is its main porpouse, for novice users (students learning Ruby as its first programming course)"
+Dependences = 
+"Nothing"
 #-----------------------------------------------------------------------------------------------------------------------
-# VERSIONES
-# 0.3 Elimina el echo en gets, para evitar que el usuario se confunda cuando su programa tiene también gets.
-# 0.2 Corregido el problema con gets, debido a la redirección de ARGV
-# 0.1 La primera. 
+# VERSIONS
+# 0.6 Avoiding weird behavior when steping on elsif
+# 0.5 Using inspect except with null objects
+# 0.4 Spanish to English translation.
+# 0.3 Remove echo in "gets", to avoid the user get confused when its program execute another "gets".
+# 0.2 Corrected malfuctioning "gets", due to ARGV redirection.
+# 0.1 The first one. 
 #-----------------------------------------------------------------------------------------------------------------------
 begin
 require 'optparse'
-class Argumentos < Hash
+class Arguments < Hash
   def initialize(args)
     super()
-    opciones = OptionParser.new do |opciones|
-      opciones.banner = "Uso: #$0 [opciones] archivo\n\n" + Descripcion + "\n\n" + Copyright + "\nVersion: " + Version + "\nOpciones:\n" + "Dependencias:\n" + Dependencias
+    options = OptionParser.new do |option|
+      option.banner = "Use: #$0 [options] file\n\n" + Description + "\n\n" + Copyright + "\nVersion: " + Version + "\nOptions:\n" + "Dependences:\n" + Dependences
 
-      opciones.on('-v', '--version', 'muestra la version y termina') do
+      option.on('-v', '--version', 'shows version and quits') do
         puts Version
         exit
       end
 
-      opciones.on_tail('-h', '--help', 'muestra esta ayuda y termina') do
-        puts opciones
+      option.on_tail('-h', '--help', 'shows this help and quits') do
+        puts option
         exit
       end
     end
 
-    opciones.parse!(args)
+    options.parse!(args)
   end
 end
 end
@@ -46,23 +48,26 @@ end
 #-----------------------------------------------------------------------------------------------------------------------
 if $0 == __FILE__
   require 'io/console'
-  argumentos = Argumentos.new(ARGV)
-  archivoFuente = ARGV[0]
+  arguments = Arguments.new(ARGV)
+  sourceFile = ARGV[0]
   ARGV.replace []
-  arrayLineas = open(archivoFuente).readlines
-  tp__tp = TracePoint.new(:line, :call, :return) do |tp__tp|
-    next if tp__tp.path != archivoFuente
-    lineaActual = tp__tp.lineno
+  arrayLines = open(sourceFile).readlines
+  oldLine = -1
+  tp__tp = TracePoint.new() do |tp__tp|
+    next if tp__tp.path != sourceFile
+    currentLine = tp__tp.lineno
+    next if oldLine == currentLine
     variables =  tp__tp.binding.eval('local_variables') + tp__tp.binding.eval('instance_variables')- [:tp__tp]
     variables.each do |var| 
-      value=tp__tp.binding.eval("#{var}")
+      value=tp__tp.binding.eval("v=#{var} ? #{var}.inspect : ''")
       puts "\t\t#{var}=#{value}"
     end
-    puts "\t#{lineaActual}: #{arrayLineas[lineaActual-1].chomp}"
+    puts "\t#{currentLine}: #{arrayLines[currentLine-1].chomp}"
+    oldLine = currentLine
     $stdin.noecho(&:gets)
   end
   tp__tp.enable
-  load(archivoFuente)
+  load(sourceFile)
   tp__tp.disable
 end
 

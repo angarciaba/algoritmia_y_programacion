@@ -1,5 +1,5 @@
-sudo apt-get install ruby-qt4 qtcreator
-sudo apt-get install cmake
+sudo apt-get install qt4-dev-tools libqt4-dev libqt4-core libqt4-gui
+sudo apt-get install ruby-qt4 qtcreator cmake
 gem install qtbindings
 
 Abrir un terminal

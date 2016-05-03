@@ -1,0 +1,6 @@
+SO : ubuntu server 16.04 
+Nombre Host : algoritmia.eisc.univalle.edu.co
+IP red EISC : 172.17.9.197
+Usuario con privilegios : administrador
+Contraseña : 4ngeldelaencarnacion
+

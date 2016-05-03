@@ -26,12 +26,3 @@
       qtiDestroy()
     end
 
-    def mostrarCopyrigth()
-      res = qtiCreate(AcercaDe)
-      if res[0]
-        caraLabel.text = "☺"
-      else
-        caraLabel.text = "☻"
-      end
-    end
-

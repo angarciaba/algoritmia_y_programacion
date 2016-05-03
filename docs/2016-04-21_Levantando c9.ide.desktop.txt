@@ -1,0 +1,62 @@
+The START Command does nothing nor even print any information or warning. I tried to understand the problem by digging in the archives:
+
+**$ cat supervisord.conf**
+[supervisord]
+nodaemon=true
+
+[program:xvfb]
+command=/usr/bin/Xvfb :99 -screen 0 1280x864x16 -ac -pn -noreset
+
+[program:x11vnc]
+command=x11vnc -forever -shared -rfbport 5900 -display :99
+
+[program:novnc]
+command=/home/ubuntu/noVNC/utils/launch.sh --vnc localhost:5900 --listen %(ENV_PORT)s
+
+[program:fluxbox]
+command=fluxbox
+environment=DISPLAY=:99
+
+===
+I tried to execute each command from the shell. And the following command gives some errors:
+
+**$ /home/ubuntu/noVNC/utils/launch.sh**
+Warning: could not find self.pem
+No installed websockify, attempting to clone websockify...
+fatal: could not create work tree dir '/home/ubuntu/noVNC/utils/websockify': Permission denied
+Unable to locate /home/ubuntu/noVNC/utils/websockify/run after downloading
+
+
+===
+Obviously, it needs root access to install "websockify":
+
+**$ sudo /home/ubuntu/noVNC/utils/launch.sh**
+Warning: could not find self.pem
+No installed websockify, attempting to clone websockify...
+Cloning into '/home/ubuntu/noVNC/utils/websockify'...
+remote: Counting objects: 3595, done.
+remote: Total 3595 (delta 0), reused 0 (delta 0), pack-reused 3595
+Receiving objects: 100% (3595/3595), 4.36 MiB | 0 bytes/s, done.
+Resolving deltas: 100% (2336/2336), done.
+Checking connectivity... done.
+Using local websockify at /home/ubuntu/noVNC/utils/websockify/run
+Starting webserver and WebSockets proxy on port 6080
+WARNING: no 'numpy' module, HyBi protocol will be slower
+WebSocket server settings:
+  - Listen on :6080
+  - Flash security policy server
+  - Web server. Web root: /home/ubuntu/noVNC
+  - No SSL/TLS support (no cert file)
+  - proxying from :6080 to localhost:5900
+
+
+Navigate to this URL:
+
+    http://angelgarcia60-juez-3005296:6080/vnc.html?host=angelgarcia60-juez-3005296&port=6080
+
+Press Ctrl-C to exit
+
+
+===
+Here we go. The server is up an running although with incorrect ports, etc. I kill it (Ctrl-C). And the START Command finally goes to life. All is working pretty good now. :) 
+

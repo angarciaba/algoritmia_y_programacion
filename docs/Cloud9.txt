@@ -1,0 +1,46 @@
+CLOUD9
+======
+Para programar en Ruby en la nube, y así no tener que instalar nada en Linux ni en Windows, ni tener que lidiar con comandos engorrosos de Linux (ls cd):
+
+https://c9.io/
+Sign In 
+Sign Up
+(Crear cuenta con username y password. ¡¡¡NO OLVIDARLOS!!!)
+
+Create a new Workspace
+Workspace Name=algoritmia_y_programacion
+Blank
+Create Workspace
+
+Menú: File - New File
+puts "Buenos días a todos"
+Menú: File - Save As - bienvenida.rb
+En la ventana de abajo Bash: ruby bienvenida.rb
+
+
+
+=== Instalación de las X11 ======
+Download ZIP in https://github.com/fjakobs/cloud9-vnc
+UPLOAD FILE: cloud9-vlc-master.zip
+unzip cloud9-vlc-master.zip
+rm cloud9-vlc-master.zip
+cd cloud9-vlc-master
+./install.sh
+cp supervisord.conf /home/ubuntu/workspace
+./run.sh
+<CTRL-C>
+
+
+c9 install c9.ide.desktop
+sudo /home/ubuntu/noVNC/utils/launch.sh
+<CTRL-C>
+Menu: Cloud9 - Preferences - Experimental - SDK 
+y allí habilitar:
+ - Load Custom Plugins
+ - Load Plugins From Workspace
+(Recargar la página web)
+Menu: View - Start Desktop
+Menu: View - Open Desktop
+(se abrirá un nuevo TAB con la interface gráfica)
+
+
