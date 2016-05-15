@@ -8,7 +8,7 @@ Copyright =
 "Creation date: 2016-03-29\n" +
 "Last modification date: 2016-04-26\n" +
 "License: GNU-GPL"
-Version = "0.6"
+Version = "0.7"
 Description = 
 "Eases programing Qt with Ruby, providing a procedural interface to Qt. The public objective are students in its first programming course. Qt is object oriented, but if you are a novice programmer, all this OO complexity can be overhelming. The methodology is: 
 - You must design your graphical interface with qtcreator (a tool from Qt). This tool is visual, not programming is required. In your QMainWindow, you must place layouts, buttons, line edits, etc in a copy&paste way. You only must name the objects your program will going to read or to write. You also need to define events, i.e. when user clicks on that button, which function must be executed. In order to do this, you must use the Qt signal/slot mechanism, being the slot your function (you must give the slot the name of your function). Do not forget to save all, thus generating a .ui file.
@@ -43,6 +43,7 @@ gem install qtbindings
 "
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONS
+# 0.7 Better ARGV management, when directories are specified.
 # 0.6 Spanish to English translation.
 # 0.5 Create .rb programmer's files if do not exist, containing all the function's skeleton and all the necessary helps. It they exist, warn on missing functions. In this version output directory and almost all line command options are eliminated, to ease the use. qtiCreate and qtiDestroy macros are added.
 # 0.4 Exec mistake corrected (substituted by system). If there are not files or directories in the command line, it is assumed 'all'. Output messages are improved.
@@ -343,12 +344,17 @@ end
 
 
 if $0 == __FILE__
-#  require 'pry'
-#  binding.pry
   $error = Error.instance
   arguments = Arguments.new(ARGV)
-  files = ARGV
+  files = []
   files = Dir["*.rb"] + Dir["*.ui"] if ARGV.empty?
+  ARGV.each do |file| 
+    if File.directory?(file)
+      files << Dir["#{file}/*.rb"] + Dir["#{file}/*.ui"]
+    else
+      files << file
+    end
+  end
   files -= ["integracionQt.rb"]
   files -= [OutputFile] if (OutputFile and (not OutputDirectory))
   $error.verbose = arguments[:verbose]
