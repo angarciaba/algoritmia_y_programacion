@@ -6,7 +6,7 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institution: EISC, Universidad del Valle, Colombia" +
 "Creation date: 2016-03-29\n" +
-"Last modification date: 2016-04-26\n" +
+"Last modification date: 2016-05-15\n" +
 "License: GNU-GPL"
 Version = "0.7"
 Description = 
