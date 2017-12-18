@@ -6,288 +6,522 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institution: EISC, Universidad del Valle, Colombia" +
 "Creation date: 2016-03-29\n" +
-"Last modification date: 2016-05-15\n" +
+"Last modification date: 2017-12-18\n" +
 "License: GNU-GPL"
-Version = "0.7"
-Description = 
-"Eases programing Qt with Ruby, providing a procedural interface to Qt. The public objective are students in its first programming course. Qt is object oriented, but if you are a novice programmer, all this OO complexity can be overhelming. The methodology is: 
-- You must design your graphical interface with qtcreator (a tool from Qt). This tool is visual, not programming is required. In your QMainWindow, you must place layouts, buttons, line edits, etc in a copy&paste way. You only must name the objects your program will going to read or to write. You also need to define events, i.e. when user clicks on that button, which function must be executed. In order to do this, you must use the Qt signal/slot mechanism, being the slot your function (you must give the slot the name of your function). Do not forget to save all, thus generating a .ui file.
-- Yo must execute this program twice, telling what are your .ui file(s) (i.e. ruby integracionQt.rb file(s).ui).
-- The first time you execute it, it generates skeleton .rb files with the functions that you must write, and the graphical objects you can use.
-- The second time, it integrates that .rb files you write with the .ui files you design, creating your complete Qt application, a 'program.rb' file ready to be executed. 
+Version = "1.0e"
+Descripcion = 
+"Facilita la integración de Qt con Ruby, por medio de una interface procedural (solo con funciones, sin conceptos OO). El público objetivo de este programa son los estudiantes de un primer curso de programación. Qt es orientado a objetos (OO), pero si tu eres un programador novato la complejidad OO te puede desanimar y por eso diseñé este programa. 
 
-It shold be noted that you can create many .ui files (each file is one window, only one of them is a QMainWindow, the others are QDialog (see Qt tutorials for more explanatios)). And it must be one .rb file for each .ui file, containing all the functions the .ui file needs as slots.
+DESCRIPCIÓN RESUMIDA
+====================
+Hay que realizar tres pasos:
+1.- Usar qtcreator para generar los archivos.ui conteniendo la interface gráfica.
+2.- Generar los archivos *_slots.rb con las funciones a rellenar (la forma de hacerlo está documentada en los propios archivos):
+        ruby integracionQt -g [archivos.ui] [directorios con archivos.ui]
+3.- Generar el programa completo, que siempre se llama miProgramaQt.rb:
+        ruby integracionQt [archivos.ui] [directorios con archivos.ui]
 
-In order to show a new window (usually a QDialog) from one of your functions, you dispose a new function: qtiCreate(dd). In this, dd is the name you give to the window (QDialog) that you want to pop up.
+DESCRIPCIÓN EXTENSA
+===================
+La metodología que propongo seguir usando este programa es:
+- Primero debes diseñar tu interface gráfica usando qtcreator (una herramienta de Qt). Esta herramienta es visual (arrastrar y soltar) de modo que no se necesita saber programar. En tu ventana principal (QMainWindow) debes colocar los Layouts, Buttons, LineEdits, etc. arrastrándolos y soltándolos donde desees. Lo único que debes de hacer es dar un nombre a cada objeto con el que quieras interacturar desde tu programa en Ruby. También debes definir allí los eventos, o sea, cuando un usuario haga clic en un botón, decir qué función de tu programa debe ejecutarse. Para ello debes de usar el editor de Signals/Slots de qtcreator. Tu función será el slot que recibe el evento. No olvides salvar todo, con lo cual se generará un archivo (típicamente mainwindow.ui).
+- Debes ejecutar este programa (integracionQt.rb) diciendo en qué directorio(s) está(n) tu(s) archivo(s) *.ui (es obligatorio que exista al menos mainwindow.ui) y tus archivos *_slots.rb (es obligatorio al menos mainwindow_slots.rb) conteniendo las funciones que se van a ejecutar para cada slot. Ejemplos:
+    ruby integracionQt.rb directorio
+    ruby integracionQt.rb miPrograma.ui
 
-Also, when you need to close a window (usually because the user clicks on a 'Accept/Cancel' button),you dispone another function: qtiDestroy(arg1, arg2, ...). With this, you can return as many arguments as you need to the calling function. The complete code snippet will be:
-# File: mainwindow.rb
-# Calling function:
-def chooseFile
-  a, b, ... = qtiCreate(MyFileDialog)
+Si lo deseas, con la opción -g se generarán los esqueletos *_slots.rb para que los rellenes. Allí aparecerán los esqueleto de las funciones que debes rellenar y en los comentarios aparecerán todos los objetos nuevos que has definido, así como instrucciones de ayuda. Cada archivo comenzará por el mismo nombre que el correspondiente *.ui. Si el archivo_slots.rb ya existe, no se sobreescribirá.
+    ruby integracionQt.rb -g directorio
+
+Como salida se generará el programa llamado miProgramaQt.rb. Este programa es el ejecutable final, que contiene la interface gráfica definida en mainwindow.ui unida al código de tus funciones que están en mainwindow_slots.rb (y cualesquiera otros archivos *.ui y *_slots.rb que existan en los directorios especificados). Puedes ejecutar este programa así:
+    ruby miProgramaQt.rb
+    
+====
+
+Hay que especificar los archivos *.ui o los directorios donde están los archivos *.ui que se van a usar para generar el programa.
+Si no especificas ningún directorio ni ningún archivo se usarán todos los archivos *.ui del directorio actual.
+El nombre del archivo de salida siempre es miProgramaQt.rb. Si deseas otro nombre, lo puedes renombrar después de que se haya creado con esta herramienta.
+
+====
+
+Para los usuarios avanzados: con qtcreator se pueden crear varias ventanas cada una con un nombre *.ui. Solo una de ellas debe llamarse mainwindow.ui. Las otras serán cajas de diálogo (QDialog). Si quieres saber más, mira la documentación de Qt. Y este programa (ruby integracionQt.rb -g) te generará los correspondientes archivos *_slots.rb. Edita todos ellos y añade código al esqueleto de cada función. La segunda vez que ejecutes integracionQt.rb (sin la opción -g) se uniran todos estos archivos en uno solo, que se llamará miProgramaQt.rb
+
+Si deseas mostrar una caja de diálogo desde una de tus funciones, ejecuta la función qtiCreate(dd)  donde dd es el nombre que le hayas puesto a tu caja de diálogo. Y cuando quieras cerrar una caja de diálogo (o la ventana principal mainwindow) típicamente porque el usuario ha hecho clic en un botón de ACEPTAR, CANCELAR o TERMINAR, entonces desde una de sus funciones debes ejecutar qtiDestroy(arg1, arg2, ...). Los argumentos son opcionales y si los pones se retornaran al programa que creó la ventana. Un trozo de código donde se muestra la idea es:
+
+# Archivo: mainwindow.rb
+# Creando una nueva ventana desde una de las funciones:
+def funcionQueEligeUnArchivo
+  a, b, ... = qtiCreate(miCajaDeDialogoParaElegirUnArchivo)
 end
 
-# File: myfiledialog.rb
-# Function that closes the window:
-def accept
-  qtiDestroy(arg1, arg2, ...)
+# Archivo: micajadedialogoparaelegiriunarchivo.rb
+# Función que cierra la ventana:
+def terminar
+  qtiDestroy(arg1, arg2, ...) # Los argumentos arg1, arg2... se copiarán a las variables a, b... de la función llamante.
 end
 
-Usually you want to return some values from QDialog window objects (lineEdits, checkBoxes...) to the QMainWindow.
+Usualmente tu querrás retornar algunos valores de la cajaDeDialogo como lineEdits, checkBoxes... a la ventana principal.
+
+====
+
+Es conveniente que los widgets que crees desde qtcreator les pongas un nombre tuyo propio (y no dejar el nombre por defecto). Así, este programa integracionQt.rb los podrá reconocer. Para todos los widget, además de la interface típica de Qt (que está en la documentación http://doc.qt.io/qt-4.8/qtgui-module.html) este programa añade ciertas funcionalidades extra:
+  widget.get.chomp.to_i  # Para leer un entero
+  widget.get.chomp.to_f  # Para leer un flotante
+  widget.get.chomp.to_s  # Para leer un string
+  widget.get.chomp.to_b  # Para leer un booleano
+  widget.puts \"mensaje\"  # Para escribir
 "
-Dependences =
+Dependencias =
 "
-sudo apt-get install qt4-dev-tools libqt4-dev libqt4-core libqt4-gui
-sudo apt-get install ruby-qt4 qtcreator cmake
-gem install qtbindings
+# Instalación de qt4:
+sudo apt-get install qt-sdk
+# Instalación de rvm:
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+sudo apt-get install software-properties-common
+sudo apt-add-repository -y ppa:rael-gc/rvm
+sudo apt-get update
+sudo apt-get install rvm
+sudo adduser ruby rvm
+# En el Teminal - Menu - Editar - Preferencias - Perfiles - Editar - Orden: Ejecutar la orden como un intérprete de acceso (login shell)
+rvm fix-permissions
+# Logout y volver a loguearse (no basta con cerrar el terminal)
+# Instalación de ruby:
+rvm install 2.4.3
+rvm use 2.4.3
+rvm gemset create nombreProyecto
+rvm gemset use nombreProyecto
+gem install qtdindings bundler
+# Instalación de la conexión entre ruby y qt4:
+sudo apt-get install ruby-qt4
 "
 #-----------------------------------------------------------------------------------------------------------------------
-# VERSIONS
+# VERSIONES
+# 1.0e Se ha organizado la documentación para hacerla más fácil de leer. Se han eliminado algunos bugs.
+# 0.9e Añade funcionalidades puts y gets a los widgets más comunes. Se ejecuta en una pasada, leyendo los archivos *_slots.rb. O en dos pasadas, donde la primera pasada genera esos archivos (usando la opción -g) con los esqueletos de las funciones (slots).
+# 0.8e Con ayudas, clases, funciones y variables en español de nuevo, por si los estudiantes quieren mirar el código
+# 0.8 Accept several Ruby versions (without String#end_with? and with improper use of ARGV as Array within Array)
 # 0.7 Better ARGV management, when directories are specified.
 # 0.6 Spanish to English translation.
-# 0.5 Create .rb programmer's files if do not exist, containing all the function's skeleton and all the necessary helps. It they exist, warn on missing functions. In this version output directory and almost all line command options are eliminated, to ease the use. qtiCreate and qtiDestroy macros are added.
-# 0.4 Exec mistake corrected (substituted by system). If there are not files or directories in the command line, it is assumed 'all'. Output messages are improved.
-# 0.3 I have just understand how to generate file output. But still missing qtiCreate and qtiDestroy macros, and to assurance all slots have its correspondently functions.
+# 0.5 Create .rb programmer's files if do not exist, containing all the function's skeleton and all the necessary helps. It they exist, warn on missing functions. In this version output directory and almost all linea command options are eliminated, to ease the use. qtiCreate and qtiDestroy macros are added.
+# 0.4 Exec mistake corrected (substituted by system). If there are not files or directories in the command linea, it is assumed 'all'. Output messages are improved.
+# 0.3 I have just understand how to generate archivo output. But still missing qtiCreate and qtiDestroy macros, and to assurance all slots have its correspondently functions.
 # 0.2 I remove superfluos things, like analizing .ui files (because that task is the responsability of rbuic4 Qt tool). Here I only must to work with the result of rbuic4, that is, the _ui.rb files.
 # 0.1 The first one. 
 #-----------------------------------------------------------------------------------------------------------------------
-# To help debbuging:
-def dd(expression,env,menssage="")
-  puts "#{expression}=#{env.eval(expression)}  #{menssage}\n==="
+# Para ayudar a depurar:
+def dd(expresion,env,mensaje="")
+  puts "#{expresion}=#{env.eval(expresion)}  #{mensaje}\n==="
 end
-# Example:
-# a="Hello"
+# Ejemplo:
+# a="Hola"
 # dd("a",binding)
 #-----------------------------------------------------------------------------------------------------------------------
-# In order to bundle gets the gems specified in Gemfile: 
+# Para poder usar las gemas del archivo Gemfile: 
 require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
 #-----------------------------------------------------------------------------------------------------------------------
-# In case of unefficient code, it can be profiled putting =true in the following line: 
-to_do_profiling=false
-if to_do_profiling then
+# Si el código es lento, puede hacerse un perfilado para buscar donde están las ineficiencias, poniento =true en la siguiente línea:
+hacer_perfilado=false
+if hacer_perfilado then
 require 'ruby-prof'
 RubyProf.start
 end
 #-----------------------------------------------------------------------------------------------------------------------
-# Operating comments to myself:
-# I must to convert *.ui files on *_ui.rb files using rbuic4 Qt tool.
-# I must to code to recognize these lines into *_ui.rb files:
-#    attr_reader :pushButton
-#    Qt::Object.connect(@myPushButton, SIGNAL('clicked()'), mainWindow, SLOT('throw_a_dice()'))
-# in order to extract the graphical object names as myPushButton, and the SLOTs as throw_a_dice()
-QtCommand = "rbuic4"
-# Directory where executable Ruby file is written:
-OutputDirectory = "."
-OutputFile = "myqtprogram.rb"
-# Default Qt widget's names, followed eventually by _number:
-DefaultQtNames = %w{centralWidget verticalLayoutWidget verticalLayout horizontalLayoutWidget horizontalLayout gridLayoutWidget gridLayout formLayoutWidget formLayout pushButton toolButton radioButton checkBox commandLinkButton buttonBox listView treeView tableView columnView listWidget treeWidget tableWidget groupBox scrollArea scrollAreaWidgetContents toolBox page tabWidget tab stackedWidget frame widget mdiArea comboBox fontComboBox lineEdit textEdit plainTextEdit spinBox doubleSpinBox dateEdit dial horizontalScrollBar verticalScrollBar horizontalSlider verticalSlider keySequenceEdit label textBrowser graphicsView calendarWidget lcdNumber progressBar line menuBar mainToolBar statusBar dockWidget dockWidgetContents horizontalSpacer verticalSpacer}
-InitializeFunction = "inicializar()"  # Function to be called from the graphical object constructor, initialize()
+# Cómo funciona este programa:
+# Convierte los archivos *.ui a archivos *_ui.rb usando la herramienta rbuic4 que viene con Qt4.x.
+# Identifica las líneas de código de los archivos *_ui.rb que tengan esta forma:
+#    attr_reader :miWidget
+#    Qt::Object.connect(@miWidget, SIGNAL('clicked()'), mainWindow, SLOT('miFuncion()'))
+# con el objetivo de extraer los objetos gráficos que creó el usuario (como miWidget) y las funciones a ejecutar en los SLOTS (como miFuncion)
+ElComandoQt4 = "rbuic4"
+# Directorio donde generar el ejecutable final, y nombre de ese ejecutable:
+ElDirectorioSalida = "."
+ElArchivoSalida = "miProgramaQt.rb"
+# Nombres por defecto de los widgets de Qt4, seguidos eventualmente por _n (siendo n un número entero):
+NombresQtPorDefecto = %w{centralWidget verticalLayoutWidget verticalLayout horizontalLayoutWidget horizontalLayout gridLayoutWidget gridLayout formLayoutWidget formLayout pushButton toolButton radioButton checkBox commandLinkButton buttonBox listView treeView tableView columnView listWidget treeWidget tableWidget groupBox scrollArea scrollAreaWidgetContents toolBox page tabWidget tab stackedWidget frame widget mdiArea comboBox fontComboBox lineEdit textEdit plainTextEdit spinBox doubleSpinBox dateEdit dial horizontalScrollBar verticalScrollBar horizontalSlider verticalSlider keySequenceEdit label textBrowser graphicsView calendarWidget lcdNumber progressBar linea menuBar mainToolBar statusBar dockWidget dockWidgetContents horizontalSpacer verticalSpacer}
+# Función del usuario que será llamada por initialize(), el constructor del GUI de Qt:
+FuncionDeInicializacion = "inicializar()"  
 #-----------------------------------------------------------------------------------------------------------------------
 
 class IntegracionQt
-  def initialize(inputFiles, outputDirectory, outputFile, qtCommand)
-    @inputFiles, @outputDirectory, @outputFile, @qtCommand = inputFiles, outputDirectory, outputFile, qtCommand
-    @objectNamesAndSlots = {}
+  def initialize(archivosUI, directorioSalida, archivoSalida, comandoQt4, generarEsqueletos)
+    @archivosUI, @directorioSalida, @archivoSalida, @comandoQt4, @generarEsqueletos = archivosUI, directorioSalida, archivoSalida, comandoQt4, generarEsqueletos
+    @nombresDeWidgetsYSlots = {}
   end
   
   
-  def buildExecutable
-    # Create output directory:
-    Dir.mkdir @outputDirectory if (@outputDirectory != "." and (not File.directory? @outputDirectory))
+  def crearEjecutable
+    # Crear el directorio de salida:
+    Dir.mkdir @directorioSalida if (@directorioSalida != "." and (not File.directory? @directorioSalida))
 
-    # Separate input .ui files and input .rb files:
-    inputFiles = separateFiles(@inputFiles)
-    
-    # Verify to exist mainwindow.ui file. Otherwise it is impossible to continue:
-    unless inputFiles[".ui"].inject(false) { |found, file| ((found or File.basename(file)) == "mainwindow") }
-      $error.abortar "Missing mainwindow.ui file" 
+    # Verificar si existe el archivo mainwindow.ui, que debió crearlo el usuario con qtcreator. Si no existe, es imposible continuar:
+    unless @archivosUI.inject(false) { |encontrado, archivo| (encontrado or (File.basename(archivo) == "mainwindow")) }
+      $error.abortar "No existe el archivo mainwindow.ui. Usted debe especificar en que directorio está. O debe crearlo usando qtcreator." 
     end
 
-    # Convert .ui files to _ui.rb files using certain Qt command:
-    inputFiles[".ui"].each { |file| system "#{@qtCommand} #{file}.ui -o #{@outputDirectory}/#{File.basename(file)}_ui.rb" }
+    # Convertir archivos .ui a archivos _ui.rb usando cierto comando de Qt:
+    @archivosUI.each { |archivo| system "#{@comandoQt4} #{archivo}.ui -o #{archivo}_ui.rb" }
     
-    # Extract graphic object and slots from each _ui.rb file:    
-    inputFiles[".ui"].each do |file|
-      graphicObjects, slots, className = extractGraphicObjectsAndSlots("#{@outputDirectory}/#{File.basename(file)}_ui.rb")
-      @objectNamesAndSlots[file] = [graphicObjects.uniq, slots.uniq, className]
+    # Extraer los widgets y los slots de cada archivo _ui.rb:    
+    @archivosUI.each do |archivo|
+      nombreDeLosWidgets, nombreDeLosSlots, nombreDeLasClases = extraerWidgetsYSlots("#{archivo}_ui.rb")
+      @nombresDeWidgetsYSlots[archivo] = [nombreDeLosWidgets.uniq, nombreDeLosSlots.uniq, nombreDeLasClases]
     end
     
-    # Report all found and create one .rb file from each .ui file:
-    createRbFileSkeletons()
+    if @generarEsqueletos
+      # Crear un archivo _slots.rb por cada archivo .ui existente y reportar allí todo lo encontrado:
+      crearArchivosEsqueletoRb()
+    else
+      # Generar el archivo de salida, leyendo los archivos *_slots.rb y juntando adecuadamente todos los archivos de entrada:
+      generarArchivoDeSalida()
+    end
     
-    # Write output file by merging adequately all input files:
-    writeOutputFile(inputFiles)
-
-    # Remove temporal files:
-    inputFiles[".ui"].each { |files| File.delete "#{@outputDirectory}/#{File.basename(files)}_ui.rb" }
+    # Borrar los archivos temporales:
+    @archivosUI.each { |archivo| File.delete "#{archivo}_ui.rb" }
   end
   
-  
-  
-  # Write output file by merging adequately all input files:
-  def writeOutputFile(inputFiles)
-    open("#{@outputDirectory}/#{@outputFile}", "w") do |outputStream|
-      inputFiles[".ui"].each do |file| 
-        outputStream << "#-----------------------------------------------\n\n"
-        open("#{@outputDirectory}/#{File.basename(file)}_ui.rb") { |inputStream| outputStream << inputStream.read }
+    
+  # Generar el archivo de salida, juntando adecuadamente todos los archivos de entrada:
+  def generarArchivoDeSalida()
+    archivoFaltante = false
+    open("#{@directorioSalida}/#{@archivoSalida}", "w") do |flujoDeSalida|
+      # Primero se copian a la salida todos los archivos *_ui.rb:
+      @archivosUI.each do |archivo| 
+        flujoDeSalida << "#-----------------------------------------------\n\n"
+        open("#{archivo}_ui.rb") { |flujoDeEntrada| flujoDeSalida << flujoDeEntrada.read }
       end
-        
-      @objectNamesAndSlots.each do |file, graphicObjects_slots|
-        outputStream << "#-----------------------------------------------\n"
-        outputStream << "require 'Qt4'\n"
-        outputStream << "class #{File.basename(file) == "mainwindow" ? "MainForm" : "QtI_"+graphicObjects_slots[2]} < Qt::#{File.basename(file) == "mainwindow" ? "MainWindow" : "Dialog"}\n"
-        if graphicObjects_slots[1].length > 0
-          outputStream << "  slots '#{graphicObjects_slots[1][0]}'"
-          graphicObjects_slots[1].drop(1).each { |slot| outputStream << ", '#{slot}'" }
-          outputStream << "\n  attr_accessor :qtiResults # To return values when this window will be closed\n"
+      # Luego se añaden las nuevas funcionalidades a los widgets (gets y puts):
+      flujoDeSalida << "#-----------------------------------------------\n"
+      flujoDeSalida << "require 'Qt4'\n\n"
+      nuevasFuncionalidades(flujoDeSalida)
+      flujoDeSalida << "#-----------------------------------------------\n"
+
+      # Se crean las clases definidas por el usuario. La clase procedente de mainwindow debe llamarse MainForm y hereda de MainWindow. Las demás clases se llaman QtI_nombreDelArchivo y heredan de Dialog 
+      @nombresDeWidgetsYSlots.each do |archivo, widget_slot_clase|
+        flujoDeSalida << "class #{File.basename(archivo) == "mainwindow" ? "MainForm" : "QtI_"+widget_slot_clase[2]} < Qt::#{File.basename(archivo) == "mainwindow" ? "MainWindow" : "Dialog"}\n"
+        # En cada clase se declaran los slots que va a usar:
+        if widget_slot_clase[1].length > 0
+          flujoDeSalida << "  slots '#{widget_slot_clase[1][0]}'"
+          widget_slot_clase[1].drop(1).each { |slot| flujoDeSalida << ", '#{slot}'" }
+          flujoDeSalida << "\n  attr_accessor :qtiResults # Para retornar valores si se cierra esta ventana\n"
         end
-        # To add .rb files with the function definitions that are slots in the .ui file:
-        inicializarFound = false
-        if File.file? file+".rb"
-          open(file+".rb").each do |line|
-            inicializarFound = true if line.match "^\s*def\s+#{InitializeFunction}"
-            case line
+        # Añadir los archivos *_slots.rb con las definiciones de funciones que son slots en el archivo .ui:
+        encontreLaFuncionDeInicializacion = false
+        if File.file? archivo+"_slots.rb"
+          open(archivo+"_slots.rb").each do |linea|
+            encontreLaFuncionDeInicializacion = true if linea.match "^\s*def\s+#{FuncionDeInicializacion}"
+            case linea
             when /^(.*?)=?\s*qtiCreate\((.*)\)/
               if $1[0] != "#"
-                outputStream << "      dialog_#{$2} = QtI_#{$2}.new(self)\n"
-                outputStream << "      dialog_#{$2}.exec\n"
-                outputStream << "      #{$1.strip} = dialog_#{$2}.qtiResults\n" if (not $1.strip.empty?)
+                flujoDeSalida << "      dialog_#{$2} = QtI_#{$2}.new(self)\n"
+                flujoDeSalida << "      dialog_#{$2}.exec\n"
+                flujoDeSalida << "      #{$1.strip} = dialog_#{$2}.qtiResults\n" if (not $1.strip.empty?)
               else
-                outputStream << line << "\n"
+                flujoDeSalida << linea << "\n"
               end
             when /^(.*?)qtiDestroy\((.*)\)/
               if $1[0] != "#"
-                variables = findAndConvertNames($2, graphicObjects_slots[0])
-                outputStream << "      @qtiResults = [ #{variables} ]\n"
-                outputStream << "      close()\n"
+                variables = buscarYConvertirNombres($2, widget_slot_clase[0])
+                flujoDeSalida << "      @qtiResults = [ #{variables} ]\n"
+                flujoDeSalida << "      close()\n"
               else
-                outputStream << line << "\n"
+                flujoDeSalida << linea << "\n"
               end
             else
-              outputStream << findAndConvertNames(line, graphicObjects_slots[0])
+              flujoDeSalida << buscarYConvertirNombres(linea, widget_slot_clase[0])
             end
           end
+        else
+          archivoFaltante = true
         end
-        outputStream << "\n\n"
-        outputStream << "  def initialize(parent=nil)\n"
-        outputStream << "    super(parent)\n"
-        outputStream << "    @ui = Ui::#{graphicObjects_slots[2]}.new\n"
-        outputStream << "    @ui.setup_ui(self)\n"
-        outputStream << (inicializarFound ? " " : "#")
-        outputStream <<  "   inicializar()\n"
-        outputStream << "    self.show\n"
-        outputStream << "  end\n"
-        outputStream << "end\n\n"
+        flujoDeSalida << "\n\n"
+        flujoDeSalida << "  def initialize(parent=nil)\n"
+        flujoDeSalida << "    super(parent)\n"
+        flujoDeSalida << "    @ui = Ui::#{widget_slot_clase[2]}.new\n"
+        flujoDeSalida << "    @ui.setup_ui(self)\n"
+        flujoDeSalida << (encontreLaFuncionDeInicializacion ? " " : "#")
+        flujoDeSalida <<  "   inicializar()\n"
+        flujoDeSalida << "    self.show\n"
+        flujoDeSalida << "  end\n"
+        flujoDeSalida << "end\n\n"
       end
-        outputStream << "\n\n\n"
-      outputStream << "if $0 == __FILE__\n"
-      outputStream << "  app = Qt::Application.new(ARGV)\n"
-      outputStream << "  MainForm.new\n"
-      outputStream << "  app.exec\n"
-      outputStream << "end\n\n"
+      flujoDeSalida << "\n\n\n"
+      flujoDeSalida << "if $0 == __FILE__\n"
+      flujoDeSalida << "  app = Qt::Application.new(ARGV)\n"
+      flujoDeSalida << "  MainForm.new\n"
+      flujoDeSalida << "  app.exec\n"
+      flujoDeSalida << "end\n\n"
+    end
+    
+    if archivoFaltante
+      $error.error "No se puede continuar. Falta el archivo #{archivoFaltante}_slots.rb con las funciones (slots) de la ventana #{archivoFaltante}.ui. Puedes generar un esqueleto de este archivo ejecutando de nuevo el programa con la opción -g (los demás archivos *_slots.rb no se sobreescribiran)" if not @generarEsqueletos
+      File.delete "#{@directorioSalida}/#{@archivoSalida}"
     end
   end  
 
 
-
-  # Report all found and .rb file creation for each .ui file:
-  def createRbFileSkeletons()
-    @objectNamesAndSlots.each do |file, graphicObjects_slots|
-      if File.exists? "#{file}.rb"
-        puts "File #{file}.rb exists, thus it will not be overwritten"
-        foundedFunctions = []
-        open("#{file}.rb").each do |line|
-          if line.match(/(\s*)def(\s+)(.*)/)
-            foundedFunctions << "#{$3}"
+  # Crear un archivo _slots.rb por cada archivo .ui existente y reportar allí todo lo encontrado:
+  def crearArchivosEsqueletoRb()
+    @nombresDeWidgetsYSlots.each do |archivo, widget_slot_clase|
+      if File.exists? "#{archivo}_slots.rb"
+        puts "El archivo #{archivo}_slots.rb ya existe, por lo que no lo voy a sobreescribir. Si necesita regenerarlo de nuevo, debe borrar usted el original."
+        funcionesEncontradas = []
+        open("#{archivo}_slots.rb").each do |linea|
+          if linea.match(/(\s*)def(\s+)(.*)/)
+            funcionesEncontradas << "#{$3}"
           end
         end
-        missingFunctions = graphicObjects_slots[1] - foundedFunctions
-        if not missingFunctions.empty?
-          puts "However, still missing the following functions, that you can complete if you need:\n\n"
-          missingFunctions.each { |slot| puts "    def #{slot}\n      # Pendiente de hacer\n    end\n\n" }
+        funcionesNoEncontradas = widget_slot_clase[1] - funcionesEncontradas
+        if not funcionesNoEncontradas.empty?
+          puts "Sin embargo, todavía faltan las siguientes funciones, que deberías añadir:\n\n"
+          funcionesNoEncontradas.each { |slot| puts "    def #{slot}\n      # Pendiente de hacer\n    end\n\n" }
         end
       else
-        puts "File #{file}.rb does not exists, thus it will be created with the function skeletons that you must write."
-        open("#{file}.rb", "w") do |outputStream|
-          outputStream << "# Archivo: #{File.basename(file)}.rb\n# Autor: \n# Email: \n"
-          outputStream << "# Generado automáticamente por #{__FILE__} by Angel Garcia <angarciaba@gmail.com> licencia GPL 3.0\n"
-          outputStream << "# En el caso de que este file exista, no se sobreescribirá\n"
-          outputStream << "# Utilidad: contiene las funciones (slots) que deben ser completadas por usted, para terminar de generar la interface del file #{File.basename(file)}.ui\n#"
+        puts "El archivo #{archivo}_slots.rb no existe, por lo que voy a crearlo con los esqueletos de las funciones que debes rellenar."
+        open("#{archivo}_slots.rb", "w") do |flujoDeSalida|
+          flujoDeSalida << "# Archivo: #{File.basename(archivo)}_slots.rb\n# Autor: \n# Email: \n"
+          flujoDeSalida << "# Generado automáticamente por #{__FILE__} by Angel Garcia <angarciaba@gmail.com> licencia GPL 3.0\n"
+          flujoDeSalida << "# En el caso de que este archivo exista, no se sobreescribirá. De modo que puede usted añadir o modificar el código sin peligro de perderlo en la siguiente iteración.\n"
+          flujoDeSalida << "# Utilidad: contiene las funciones (slots creados por usted con qtcreator) que deben ser completadas por usted, para terminar de generar la interface del archivo #{File.basename(archivo)}.ui\n#"
 
-          outputStream << "\n# Dentro de esas funciones se pueden usar los siguientes objetos gráficos:\n"
-          graphicObjects_slots[0].each { |guiObject| outputStream << "#   #{guiObject}\n" if (not isDefaultName?(guiObject)) } #     (que es de tipo #{})
-          outputStream << "\n# Para poder usar estos objetos gráficos puede consultar sus propiedades y funcionalidades aquí:"
-          outputStream << "\n#   http://doc.qt.io/qt-4.8/qtgui-module.html"
-          outputStream << "\n#\n# También existen estos otros objetos gráficos, pero usted no les ha dado nombre, por lo que probablemente no le interese usarlos:\n# "
-          graphicObjects_slots[0].each { |guiObject| outputStream << " #{guiObject}" if isDefaultName?(guiObject) }
+          flujoDeSalida << "\n# Dentro de esas funciones se pueden usar los siguientes widgets creados por usted con qtcreator:"
+          widget_slot_clase[0].each { |nombreWidget| flujoDeSalida << "\n#    #{nombreWidget}" if (not esUnNombrePorDefecto?(nombreWidget)) } 
+          flujoDeSalida << "\n#\n# También existen estos otros widgets, pero usted no les ha dado nombre, por lo que probablemente no le interese usarlos (aunque nada impide que los use):\n"
+          widget_slot_clase[0].each { |nombreWidget| flujoDeSalida << "#    #{nombreWidget}\n" if esUnNombrePorDefecto?(nombreWidget) }
+          
+          # v0.9 begin
+          flujoDeSalida << "#\n#Para ofrecer mayor facilidad de uso a todos estos widgets, se les ha añadido las funciones de entrada/salida gets y puts, de modo que puede leerlos y escribirlos así:"
+          flujoDeSalida << "\n#  x = widget.gets.chomp.to_i # Para leer un número entero"
+          flujoDeSalida << "\n#  x = widget.gets.chomp.to_f # Para leer un número flotante"
+          flujoDeSalida << "\n#  x = widget.gets.chomp.to_s # Para leer un string"
+          flujoDeSalida << "\n#  x = widget.gets.chomp.to_b # Para leer un booleano true/false"
+          flujoDeSalida << "\n#  widget.puts string  # Para imprimir un string (puede usar los interpoladores habituales para insertar variables) "
+          # v0.9 end
 
-          outputStream << "\n#\n# En sus funciones usted puede llamar a:"
-          outputStream << "\n#  - aa = qtiCreate(dd) para crear una nueva ventana de tipo QDialog. Como argumento (dd) le debe pasar el nombre del objeto gráfico a crear (de tipo QDialog). En aa retorna un array con los Arguments que envió el qtiDestroy(). Usted puede y debe poner nombres distintos a dd y aa."
-          outputStream << "\n#  - qtiDestroy(arg1, arg2, etc) para destruir la ventana actual. arg1, arg2, etc son Arguments opcionales de retorno, que los recibirá en el array aa retornado a la función qtiCreate() que creó esta ventana."
+          flujoDeSalida << "\n#\n# Si quiere usar otras funcionalidades de estos objetos gráficos debe consultar aquí:"
+          flujoDeSalida << "\n#   http://doc.qt.io/qt-4.8/qtgui-module.html"
 
-          outputStream << "\n#\n# Las funciones a completar son: \n\n"
-          graphicObjects_slots[1].each { |slot| outputStream << "    def #{slot}\n      # Pendiente de hacer\n    end\n\n" }
+          flujoDeSalida << "\n#\n# En sus funciones usted puede llamar a:"
+          flujoDeSalida << "\n#  aa = qtiCreate(dd) # para crear una nueva ventana de tipo QDialog. Como argumento (dd) le debe pasar el nombre del objeto gráfico a crear (de tipo QDialog). En aa retorna un array con los argumentos que envió el qtiDestroy(). Usted puede (y debe) poner nombres distintos a dd y aa."
+          flujoDeSalida << "\n#  qtiDestroy(arg1, arg2, etc) # para destruir la ventana actual. arg1, arg2, etc son argumentos opcionales de retorno, que los recibirá en el array aa retornado a la función qtiCreate() que creó esta ventana."
+
+          flujoDeSalida << "\n#\n# Las funciones a completar son: \n\n"
+          widget_slot_clase[1].each { |slot| flujoDeSalida << "    def #{slot}\n      # Pendiente de hacer\n    end\n\n" }
         end
       end
     end
   end
 
 
+  def nuevasFuncionalidades(flujoDeSalida)
+    flujoDeSalida << "# Patch monkey muy sabroso :):D:)\n"
+    flujoDeSalida << "module Qt\n"
 
-  # Verifies if a token is a Qt widget default name:
-  def isDefaultName?(token)
-    DefaultQtNames.each { |name| return true if token.match "#{name}(_\d+)?" }
+    flujoDeSalida << "  class AbstractSlider   # Slider y Dial\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setValue(a.to_i)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      value.to_s\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class AbstractButton    # (CheckBox)\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setChecked(a.to_b)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      isChecked ? 'true' : 'false'\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class Date\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "     b = /(....)-(..)-(..)/.match(a)\n"
+    flujoDeSalida << "      setDate(b[1], b[2], b[3])\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      toString('YYYY-MM-DD')\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class DateTime\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "     b = /(....)-(..)-(..) (..):(..):(..)/.match(a)\n"
+    flujoDeSalida << "      setDate(b[1], b[2], b[3])\n"
+    flujoDeSalida << "      setHMS(b[4], b[5], b[6])\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      toString('yyyy-MM-dd hh:mm:ss')\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class DoubleSpinBox\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setValue(a.to_f)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      value.to_s\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class Label\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setText(a)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      text\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class LCDNumber\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      display(a)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      value.to_s\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class LineEdit\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setText(a)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      text\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class PlainTextEdit\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setPlainText(a)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      toPlainText\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class ProgressBar\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setValue(a.to_i)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      value.to_s\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class PushButton\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setText(a)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      text\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class RadioButton\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setChecked(a.to_b)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      isChecked ? 'true' : 'false'\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class SpinBox\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setValue(a.to_i)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      value.to_s\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class TextEdit\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "      setText(a)\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      text\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class Time\n"
+    flujoDeSalida << "    def puts(a)\n"
+    flujoDeSalida << "     b = /(..):(..):(..)/.match(a)\n"
+    flujoDeSalida << "      setHMS(b[1], b[2], b[3])\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "    def gets\n"
+    flujoDeSalida << "      toString('hh:mm:ss')\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "end\n\n"
+
+    flujoDeSalida << "  class String\n"
+    flujoDeSalida << "    def to_b\n"
+    flujoDeSalida << "      (self == 'false' or self == '') ? false : true\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class FalseClass\n"
+    flujoDeSalida << "    def to_s\n"
+    flujoDeSalida << "      'false'\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+
+    flujoDeSalida << "  class TrueClass\n"
+    flujoDeSalida << "    def to_s\n"
+    flujoDeSalida << "      'true'\n"
+    flujoDeSalida << "    end\n"
+    flujoDeSalida << "  end\n"
+  end
+
+
+  # Verifica si un token es un nombre por defecto de algún Widget de Qt4:
+  def esUnNombrePorDefecto?(token)
+    NombresQtPorDefecto.each { |nombre| return true if token.match "#{nombre}(_\d+)?" }
     return false
   end
 
 
 
-  # Searches for widgets into the line. Verifies it does not make part of a larger word. Puts before them "@ui."
-  def findAndConvertNames(line, graphicObjects)
-    graphicObjects.each do |attribute|
-      index = 0
+  # Busca nombres de widgets en la linea de texto, asegurándose de que no formen parte de una palabra más larga. Pone delante de cada uno:  "@ui."
+  def buscarYConvertirNombres(linea, widgets)
+    añadirDelante =  "@ui."
+    widgets.each do |unWidget|
+      indice = 0
       loop do
-        index = line.index(attribute, index)
-        break unless index
-        if ((index == 0 or (not line[index-1].match(/\w/))) and (index+attribute.length > line.length or (not line[index+attribute.length].match(/\w/))))
-          line.insert(index, "@ui.")
-          index += "@ui.".length
+        indice = linea.index(unWidget, indice)
+        break unless indice
+        if ((indice == 0 or (not linea[indice-1].match(/\w/))) and (indice+unWidget.length > linea.length or (not linea[indice+unWidget.length].match(/\w/))))
+          linea.insert(indice, añadirDelante)
+          indice += añadirDelante.length
         end
-        index += attribute.length
+        indice += unWidget.length
       end
     end
-    line
+    linea
   end
  
-
-
-  # Creates a two-raw array. Raw 0 is a array containing the input .ui files. Raw 1 is another array with the .rb input files
-  def separateFiles(inputFiles)
-    files = Hash.new() { |hash, key| hash[key] = [] }
-    inputFiles.each do |file|
-      [".ui", ".rb"].each do |extension|
-        files[extension] << file.chomp(extension) if file.end_with?(extension)
-      end
-    end
-    files
+ 
+  def end_with?(string, ending)
+    string.index(ending) == string.size - ending.size
   end
   
 
-
-  # Given a _rb.ui file, it extracts all widgets and all slots:   
-  def extractGraphicObjectsAndSlots(file)
-    guiObjects = []
-    guiSlots = [ InitializeFunction ]
-    allLines = ""
-    open(file).each do |line|
-      found = /^\s*attr_reader\s*:(\w*)/.match(line)
-      guiObjects << found[1] if found
-      found = /^\s*Qt::Object\.connect\(@?\w+,\s*SIGNAL\(.*?\),\s*\w+,\s*SLOT\('(.+?)'\)\)/.match(line)
-      guiSlots << found[1] if found
-      allLines << line
+  # Dado un archivo _rb.ui extrae todos los widgets, slots y nombres de clases:
+  def extraerWidgetsYSlots(archivo)
+    widgets = []
+    slots = [ FuncionDeInicializacion ]
+    todasLasLineas = ""
+    open(archivo).each do |linea|
+      encontrado = /^\s*attr_reader\s*:(\w*)/.match(linea)
+      widgets << encontrado[1] if encontrado
+      encontrado = /^\s*Qt::Object\.connect\(@?\w+,\s*SIGNAL\(.*?\),\s*\w+,\s*SLOT\('(.+?)'\)\)/.match(linea)
+      slots << encontrado[1] if encontrado
+      todasLasLineas << linea
     end
-    return guiObjects, guiSlots, allLines.match(/^module\s+Ui\s+class (\w+)/)[1]
+    return widgets, slots, todasLasLineas.match(/^module\s+Ui\s+class (\w+)/)[1]
   end
 
 end
@@ -295,28 +529,33 @@ end
 
 #-----------------------------------------------------------------------------------------------------------------------
 require 'optparse'
-class Arguments < Hash
+class ArgumentosEnLaLineaDeComandos < Hash
   def initialize(args)
     super()
-    options = OptionParser.new do |option|
-      option.banner = "Use: #$0 [option] files [...]\n\n" + Description + "\n\n" + Copyright + "\nVersion: " + Version + "\nOptions:\n" + "Dependences:\n" + Dependences
+    self[:esqueletos] = false
+    opciones = OptionParser.new do |opcion|
+      opcion.banner = "Use: #$0 [opciones] archivos.ui o directorios [...]\n\n" + Descripcion + "\n\n" + Copyright + "\nVersion: " + Version + "\nOptions:\n" + "Dependencias:\n" + Dependencias
 
-      option.on('-b', '--verbose', 'shows all warnings and errors found') do
+      opcion.on('-g', '--generar-esqueletos', 'genera los archivos _slots.rb con los esqueletos de las funciones (los slots definidos en los archivos *.ui)') do 
+        self[:esqueletos] = true
+      end
+
+      opcion.on('-b', '--verbose', 'muestra todos los errores y avisos que ocurran') do
         self[:verbose] = true
       end
 
-      option.on('-v', '--version', 'shows version and quits') do
+      opcion.on('-v', '--version', 'muestra la versión y termina') do
         puts Version
         exit
       end
 
-      option.on_tail('-h', '--help', 'shows this help and quits') do
-        puts option
+      opcion.on_tail('-h', '--help', 'muestra esta ayuda y termina') do
+        puts opcion
         exit
       end
     end
 
-    options.parse!(args)
+    opciones.parse!(args)
   end
 end
 
@@ -331,12 +570,16 @@ class Error
     @verbose = false
   end
   
-  def warn(string)
-    if @verbose then puts "WARNING: #{string}" end
+  def aviso(string)
+    if @verbose then puts "AVISO: #{string}" end
   end
   
+  def error(string)
+    puts "ERROR: #{string}"
+  end
+
   def abortar(string)
-    puts "FATAL ERROR: #{string}"
+    puts "ERROR FATAL: #{string}"
     exit 1
   end
 end
@@ -345,32 +588,30 @@ end
 
 if $0 == __FILE__
   $error = Error.instance
-  arguments = Arguments.new(ARGV)
-  files = []
-  files = Dir["*.rb"] + Dir["*.ui"] if ARGV.empty?
-  ARGV.each do |file| 
-    if File.directory?(file)
-      files << Dir["#{file}/*.rb"] + Dir["#{file}/*.ui"]
+  argumentos = ArgumentosEnLaLineaDeComandos.new(ARGV)
+  archivosUI = []
+  directorios = ARGV
+  directorios = ["."] if ARGV.empty?
+  directorios.each do |directorio| 
+    if File.directory?(directorio)
+      Dir["#{directorio}/*.ui"].each { |archivo| archivosUI << "#{directorio}/#{File.basename(archivo, ".ui")}"}
     else
-      files << file
+      archivosUI << File.basename(directorio, ".ui") if File.extname(directorio) == ".ui"
     end
   end
-  files -= ["integracionQt.rb"]
-  files -= [OutputFile] if (OutputFile and (not OutputDirectory))
-  $error.verbose = arguments[:verbose]
-  integracionQt = IntegracionQt.new(files, OutputDirectory, OutputFile, QtCommand)
-  integracionQt.buildExecutable
+  $error.verbose = argumentos[:verbose]
+  integracionQt = IntegracionQt.new(archivosUI.flatten, ElDirectorioSalida, ElArchivoSalida, ElComandoQt4, argumentos[:esqueletos])
+  integracionQt.crearEjecutable
 end
 
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-if to_do_profiling then
+if hacer_perfilado then
 $result = RubyProf.stop
 printer = RubyProf::FlatPrinter.new($result)
 printer.print(STDOUT)
 end
 #-----------------------------------------------------------------------------------------------------------------------
-
 
 
