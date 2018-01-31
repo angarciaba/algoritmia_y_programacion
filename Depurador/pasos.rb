@@ -6,14 +6,15 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institution: EISC, Universidad del Valle, Colombia" +
 "Creation date: 2016-04-08\n" +
-"Last modification date: 2016-05-03\n" +
+"Last modification date: 2018-01-31\n" +
 "License: GNU-GPL"
-Version = "0.6"
-Description = "It is useful for executing a Ruby program step by step, showing all local variables and instance variables and the code line that is going to be executed if you press <ENTER>. It is very simple, compared with other debbugers, but that is its main porpouse, for novice users (students learning Ruby as its first programming course)"
+Version = "0.7"
+Description = "It is useful for executing a Ruby program step by step, showing all local variables and instance variables and the code line that is going to be executed if you press <F9>. It is very simple, compared with other debbugers, but that is its main porpouse, for novice users (students learning Ruby as its first programming course)"
 Dependences = 
 "Nothing"
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONS
+# 0.7 Using F9 instead of ENTER to step on the program (compatible with Linux and Cloud9)
 # 0.6 Avoiding weird behavior when steping on elsif
 # 0.5 Using inspect except with null objects
 # 0.4 Spanish to English translation.
@@ -46,8 +47,24 @@ end
 end
 
 #-----------------------------------------------------------------------------------------------------------------------
+require 'io/console'
+def waitigForAKey(keyCode="\e[20~")  # Default is F9 keycode
+  found = false
+  while not found
+    found = true
+    keyCode.each_char do |code|
+      keyPoint = STDIN.getch
+      if keyPoint != code
+        found = false
+        break
+      end
+    end
+  end
+end
+#-----------------------------------------------------------------------------------------------------------------------
 if $0 == __FILE__
   require 'io/console'
+  p "Hit F9 to execute your program step by step"
   arguments = Arguments.new(ARGV)
   sourceFile = ARGV[0]
   ARGV.replace []
@@ -64,7 +81,7 @@ if $0 == __FILE__
     end
     puts "\t#{currentLine}: #{arrayLines[currentLine-1].chomp}"
     oldLine = currentLine
-    $stdin.noecho(&:gets)
+    waitigForAKey
   end
   tp__tp.enable
   load(sourceFile)
