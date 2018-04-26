@@ -6,23 +6,14 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institution: EISC, Universidad del Valle, Colombia" +
 "Creation date: 2016-03-29\n" +
-"Last modification date: 2017-12-18\n" +
+"Last modification date: 2018-04-26\n" +
 "License: GNU-GPL"
-Version = "1.0e"
+Version = "0.9e"
 Descripcion = 
-"Facilita la integración de Qt con Ruby, por medio de una interface procedural (solo con funciones, sin conceptos OO). El público objetivo de este programa son los estudiantes de un primer curso de programación. Qt es orientado a objetos (OO), pero si tu eres un programador novato la complejidad OO te puede desanimar y por eso diseñé este programa. 
+"Hay que especificar los archivos *.ui o los directorios donde están los archivos *.ui que se van a usar para generar el programa.
 
-DESCRIPCIÓN RESUMIDA
-====================
-Hay que realizar tres pasos:
-1.- Usar qtcreator para generar los archivos.ui conteniendo la interface gráfica.
-2.- Generar los archivos *_slots.rb con las funciones a rellenar (la forma de hacerlo está documentada en los propios archivos):
-        ruby integracionQt -g [archivos.ui] [directorios con archivos.ui]
-3.- Generar el programa completo, que siempre se llama miProgramaQt.rb:
-        ruby integracionQt [archivos.ui] [directorios con archivos.ui]
+Facilita la integración de Qt con Ruby, por medio de una interface procedural (solo con funciones, sin conceptos OO). El público objetivo de este programa son los estudiantes de un primer curso de programación. Qt es orientado a objetos (OO), pero si tu eres un programador novato la complejidad OO te puede desanimar y por eso diseñé este programa. 
 
-DESCRIPCIÓN EXTENSA
-===================
 La metodología que propongo seguir usando este programa es:
 - Primero debes diseñar tu interface gráfica usando qtcreator (una herramienta de Qt). Esta herramienta es visual (arrastrar y soltar) de modo que no se necesita saber programar. En tu ventana principal (QMainWindow) debes colocar los Layouts, Buttons, LineEdits, etc. arrastrándolos y soltándolos donde desees. Lo único que debes de hacer es dar un nombre a cada objeto con el que quieras interacturar desde tu programa en Ruby. También debes definir allí los eventos, o sea, cuando un usuario haga clic en un botón, decir qué función de tu programa debe ejecutarse. Para ello debes de usar el editor de Signals/Slots de qtcreator. Tu función será el slot que recibe el evento. No olvides salvar todo, con lo cual se generará un archivo (típicamente mainwindow.ui).
 - Debes ejecutar este programa (integracionQt.rb) diciendo en qué directorio(s) está(n) tu(s) archivo(s) *.ui (es obligatorio que exista al menos mainwindow.ui) y tus archivos *_slots.rb (es obligatorio al menos mainwindow_slots.rb) conteniendo las funciones que se van a ejecutar para cada slot. Ejemplos:
@@ -35,13 +26,12 @@ Si lo deseas, con la opción -g se generarán los esqueletos *_slots.rb para que
 Como salida se generará el programa llamado miProgramaQt.rb. Este programa es el ejecutable final, que contiene la interface gráfica definida en mainwindow.ui unida al código de tus funciones que están en mainwindow_slots.rb (y cualesquiera otros archivos *.ui y *_slots.rb que existan en los directorios especificados). Puedes ejecutar este programa así:
     ruby miProgramaQt.rb
     
-====
 
-Hay que especificar los archivos *.ui o los directorios donde están los archivos *.ui que se van a usar para generar el programa.
+
 Si no especificas ningún directorio ni ningún archivo se usarán todos los archivos *.ui del directorio actual.
 El nombre del archivo de salida siempre es miProgramaQt.rb. Si deseas otro nombre, lo puedes renombrar después de que se haya creado con esta herramienta.
 
-====
+
 
 Para los usuarios avanzados: con qtcreator se pueden crear varias ventanas cada una con un nombre *.ui. Solo una de ellas debe llamarse mainwindow.ui. Las otras serán cajas de diálogo (QDialog). Si quieres saber más, mira la documentación de Qt. Y este programa (ruby integracionQt.rb -g) te generará los correspondientes archivos *_slots.rb. Edita todos ellos y añade código al esqueleto de cada función. La segunda vez que ejecutes integracionQt.rb (sin la opción -g) se uniran todos estos archivos en uno solo, que se llamará miProgramaQt.rb
 
@@ -61,7 +51,7 @@ end
 
 Usualmente tu querrás retornar algunos valores de la cajaDeDialogo como lineEdits, checkBoxes... a la ventana principal.
 
-====
+
 
 Es conveniente que los widgets que crees desde qtcreator les pongas un nombre tuyo propio (y no dejar el nombre por defecto). Así, este programa integracionQt.rb los podrá reconocer. Para todos los widget, además de la interface típica de Qt (que está en la documentación http://doc.qt.io/qt-4.8/qtgui-module.html) este programa añade ciertas funcionalidades extra:
   widget.get.chomp.to_i  # Para leer un entero
@@ -89,13 +79,12 @@ rvm install 2.4.3
 rvm use 2.4.3
 rvm gemset create nombreProyecto
 rvm gemset use nombreProyecto
-gem install qtdindings bundler
+gem install qtbindings bundler
 # Instalación de la conexión entre ruby y qt4:
 sudo apt-get install ruby-qt4
 "
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONES
-# 1.0e Se ha organizado la documentación para hacerla más fácil de leer. Se han eliminado algunos bugs.
 # 0.9e Añade funcionalidades puts y gets a los widgets más comunes. Se ejecuta en una pasada, leyendo los archivos *_slots.rb. O en dos pasadas, donde la primera pasada genera esos archivos (usando la opción -g) con los esqueletos de las funciones (slots).
 # 0.8e Con ayudas, clases, funciones y variables en español de nuevo, por si los estudiantes quieren mirar el código
 # 0.8 Accept several Ruby versions (without String#end_with? and with improper use of ARGV as Array within Array)
@@ -231,7 +220,7 @@ class IntegracionQt
             end
           end
         else
-          archivoFaltante = true
+          archivoFaltante = archivo
         end
         flujoDeSalida << "\n\n"
         flujoDeSalida << "  def initialize(parent=nil)\n"
@@ -613,5 +602,6 @@ printer = RubyProf::FlatPrinter.new($result)
 printer.print(STDOUT)
 end
 #-----------------------------------------------------------------------------------------------------------------------
+
 
 
