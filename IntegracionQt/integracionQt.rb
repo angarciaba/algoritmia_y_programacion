@@ -6,9 +6,9 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institution: EISC, Universidad del Valle, Colombia" +
 "Creation date: 2016-03-29\n" +
-"Last modification date: 2018-04-26\n" +
+"Last modification date: 2018-04-27\n" +
 "License: GNU-GPL"
-Version = "0.9e"
+Version = "1.0e"
 Descripcion = 
 "Hay que especificar los archivos *.ui o los directorios donde están los archivos *.ui que se van a usar para generar el programa.
 
@@ -85,6 +85,7 @@ sudo apt-get install ruby-qt4
 "
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONES
+# 1.0e Corrijo dos bugs: una RegExp que no funcionaba en todos los casos; y lo que ocurre cuando se ejecuta sin argumentos.
 # 0.9e Añade funcionalidades puts y gets a los widgets más comunes. Se ejecuta en una pasada, leyendo los archivos *_slots.rb. O en dos pasadas, donde la primera pasada genera esos archivos (usando la opción -g) con los esqueletos de las funciones (slots).
 # 0.8e Con ayudas, clases, funciones y variables en español de nuevo, por si los estudiantes quieren mirar el código
 # 0.8 Accept several Ruby versions (without String#end_with? and with improper use of ARGV as Array within Array)
@@ -468,7 +469,7 @@ class IntegracionQt
 
   # Verifica si un token es un nombre por defecto de algún Widget de Qt4:
   def esUnNombrePorDefecto?(token)
-    NombresQtPorDefecto.each { |nombre| return true if token.match "#{nombre}(_\d+)?" }
+    NombresQtPorDefecto.each { |nombre| return true if token.match /^#{nombre}_?(\d)*$/ }
     return false
   end
 
