@@ -6,9 +6,9 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institution: EISC, Universidad del Valle, Colombia" +
 "Creation date: 2016-03-29\n" +
-"Last modification date: 2018-04-27\n" +
+"Last modification date: 2018-04-30\n" +
 "License: GNU-GPL"
-Version = "1.0e"
+Version = "1.1e"
 Descripcion = 
 "Hay que especificar los archivos *.ui o los directorios donde están los archivos *.ui que se van a usar para generar el programa.
 
@@ -85,6 +85,7 @@ sudo apt-get install ruby-qt4
 "
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONES
+# 1.1e Corrijo dos bugs: qtiDestroy se acepta ahora con o sin paréntesis. La clase AbstractButton ya no funciona, por lo que se sustituye por CheckBox
 # 1.0e Corrijo dos bugs: una RegExp que no funcionaba en todos los casos; y lo que ocurre cuando se ejecuta sin argumentos.
 # 0.9e Añade funcionalidades puts y gets a los widgets más comunes. Se ejecuta en una pasada, leyendo los archivos *_slots.rb. O en dos pasadas, donde la primera pasada genera esos archivos (usando la opción -g) con los esqueletos de las funciones (slots).
 # 0.8e Con ayudas, clases, funciones y variables en español de nuevo, por si los estudiantes quieren mirar el código
@@ -200,7 +201,7 @@ class IntegracionQt
           open(archivo+"_slots.rb").each do |linea|
             encontreLaFuncionDeInicializacion = true if linea.match "^\s*def\s+#{FuncionDeInicializacion}"
             case linea
-            when /^(.*?)=?\s*qtiCreate\((.*)\)/
+            when /^(.*?)=?\s*qtiCreate(\((.*)\))?/
               if $1[0] != "#"
                 flujoDeSalida << "      dialog_#{$2} = QtI_#{$2}.new(self)\n"
                 flujoDeSalida << "      dialog_#{$2}.exec\n"
@@ -208,7 +209,7 @@ class IntegracionQt
               else
                 flujoDeSalida << linea << "\n"
               end
-            when /^(.*?)qtiDestroy\((.*)\)/
+            when /^(.*?)qtiDestroy\(?([^)]*)\)?/
               if $1[0] != "#"
                 variables = buscarYConvertirNombres($2, widget_slot_clase[0])
                 flujoDeSalida << "      @qtiResults = [ #{variables} ]\n"
@@ -315,7 +316,7 @@ class IntegracionQt
     flujoDeSalida << "    end\n"
     flujoDeSalida << "  end\n"
 
-    flujoDeSalida << "  class AbstractButton    # (CheckBox)\n"
+    flujoDeSalida << "  class CheckBox    # (AbstractButton ya no funciona)\n"
     flujoDeSalida << "    def puts(a)\n"
     flujoDeSalida << "      setChecked(a.to_b)\n"
     flujoDeSalida << "    end\n"
