@@ -6,9 +6,9 @@ Copyright =
 "Email: angel.garcia@correounivalle.edu.co\n" +
 "Institution: EISC, Universidad del Valle, Colombia" +
 "Creation date: 2016-03-29\n" +
-"Last modification date: 2018-04-30\n" +
+"Last modification date: 2018-05-14\n" +
 "License: GNU-GPL"
-Version = "1.1e"
+Version = "1.2es"
 Descripcion = 
 "Hay que especificar los archivos *.ui o los directorios donde están los archivos *.ui que se van a usar para generar el programa.
 
@@ -85,10 +85,11 @@ sudo apt-get install ruby-qt4
 "
 #-----------------------------------------------------------------------------------------------------------------------
 # VERSIONES
-# 1.1e Corrijo dos bugs: qtiDestroy se acepta ahora con o sin paréntesis. La clase AbstractButton ya no funciona, por lo que se sustituye por CheckBox
-# 1.0e Corrijo dos bugs: una RegExp que no funcionaba en todos los casos; y lo que ocurre cuando se ejecuta sin argumentos.
-# 0.9e Añade funcionalidades puts y gets a los widgets más comunes. Se ejecuta en una pasada, leyendo los archivos *_slots.rb. O en dos pasadas, donde la primera pasada genera esos archivos (usando la opción -g) con los esqueletos de las funciones (slots).
-# 0.8e Con ayudas, clases, funciones y variables en español de nuevo, por si los estudiantes quieren mirar el código
+# 1.2es Elimino los require innecesarios
+# 1.1es Corrijo dos bugs: qtiDestroy se acepta ahora con o sin paréntesis. La clase AbstractButton ya no funciona, por lo que se sustituye por CheckBox
+# 1.0es Corrijo dos bugs: una RegExp que no funcionaba en todos los casos; y lo que ocurre cuando se ejecuta sin argumentos.
+# 0.9es Añade funcionalidades puts y gets a los widgets más comunes. Se ejecuta en una pasada, leyendo los archivos *_slots.rb. O en dos pasadas, donde la primera pasada genera esos archivos (usando la opción -g) con los esqueletos de las funciones (slots).
+# 0.8es Con ayudas, clases, funciones y variables en español de nuevo, por si los estudiantes quieren mirar el código
 # 0.8 Accept several Ruby versions (without String#end_with? and with improper use of ARGV as Array within Array)
 # 0.7 Better ARGV management, when directories are specified.
 # 0.6 Spanish to English translation.
@@ -107,8 +108,8 @@ end
 # dd("a",binding)
 #-----------------------------------------------------------------------------------------------------------------------
 # Para poder usar las gemas del archivo Gemfile: 
-require 'rubygems'
-require 'bundler'
+#require 'rubygems'
+#require 'bundler'
 #-----------------------------------------------------------------------------------------------------------------------
 # Si el código es lento, puede hacerse un perfilado para buscar donde están las ineficiencias, poniento =true en la siguiente línea:
 hacer_perfilado=false
