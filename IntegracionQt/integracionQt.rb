@@ -74,7 +74,7 @@ rvm install 2.4.3
 rvm use 2.4.3
 rvm gemset create nombreProyecto
 rvm gemset use nombreProyecto
-gem install qtbindings bundler ftools
+gem install qtbindings bundler
 # Instalación de la conexión entre ruby y qt4:
 sudo apt-get install ruby-qt4
 "
@@ -129,8 +129,7 @@ NombresQtPorDefecto = %w{centralWidget verticalLayoutWidget verticalLayout horiz
 # Función del usuario que será llamada por initialize(), el constructor del GUI de Qt:
 FuncionDeInicializacion = "inicializar()"  
 #-----------------------------------------------------------------------------------------------------------------------
-# From: Lucas Carlson & Leonard Richardson, Ruby CookBook, O'Reilly. 2006. pp.220-221
-#require 'ftools'
+# Adapted from: Lucas Carlson & Leonard Richardson, Ruby CookBook, O'Reilly. 2006. pp.220-221
 class File
   def File.versioned_filename(base, first_suffix='.000')
     suffix = nil
